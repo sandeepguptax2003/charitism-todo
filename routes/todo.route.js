@@ -6,14 +6,15 @@ const todoRouter = express.Router();
 
 
 // Create a new Todo
-todoRouter.post("/",authenticateToken, async (req, res) => {
+todoRouter.post("/", authenticateToken, async (req, res) => {
   try {
-    const { title, description } = req.body;
-    const todo = new TodoModel({ title, description });
-    await todo.save();
-    res.status(201).json(todo);
+      const { title, description } = req.body;
+      const userId = req.user.userId;
+      const todo = new TodoModel({ title, description, user: userId });
+      await todo.save();
+      res.status(201).json(todo);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

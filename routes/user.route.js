@@ -1,6 +1,7 @@
 const express=require("express")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
+const crypto = require("crypto")
 const {UserModel}=require("../models/user.model")
 require("dotenv").config()
 
@@ -24,7 +25,6 @@ userRouter.post("/signup", async (req, res) => {
       await user.save();
       res.status(201).send({ msg: "Registration successful", user });
     } catch (error) {
-      console.error(error);
       res.status(500).send({ msg: "Something went wrong during registration" });
     }
   });
@@ -46,7 +46,9 @@ userRouter.post("/login",async (req,res)=>{
             return res.send({msg:"wrong credentials"})
         }
 
-        const token=jwt.sign({userId:isUserPresent._id},process.env.SECRET,{expiresIn:"4h"})
+        const token=jwt.sign({userId:isUserPresent._id},process.env.SECRET,{expiresIn:"4h",
+        jwtid: crypto.randomBytes(16).toString('hex'),
+      })
         res.send({msg:"Login Successful",token:token,user:isUserPresent})
     } catch (error) {
         res.send({msg:"something went wrong"}) 
